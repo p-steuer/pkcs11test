@@ -28,7 +28,8 @@ TEST_F(ReadOnlySessionTest, SeedRandom) {
   // Additional seed data. Not actually particularly random.
   CK_BYTE seed[8] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
   if (g_token_flags & CKF_RNG) {
-    EXPECT_CKR_OK(g_fns->C_SeedRandom(session_, seed, sizeof(seed)));
+    CK_RV rv = g_fns->C_SeedRandom(session_, seed, sizeof(seed));
+    EXPECT_TRUE(rv == CKR_OK || rv == CKR_RANDOM_SEED_NOT_SUPPORTED);
   } else {
     EXPECT_CKR(CKR_RANDOM_NO_RNG, g_fns->C_SeedRandom(session_, seed, sizeof(seed)));
   }
