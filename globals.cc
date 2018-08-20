@@ -59,6 +59,7 @@ std::map<std::string, CipherInfo> kCipherInfo = {
   {"IDEA-CBC", {CKK_IDEA, CKM_IDEA_KEY_GEN, CKM_IDEA_CBC, 8, true, -1}},
   {"AES-ECB", {CKK_AES, CKM_AES_KEY_GEN, CKM_AES_ECB, 16, false, 16}},
   {"AES-CBC", {CKK_AES, CKM_AES_KEY_GEN, CKM_AES_CBC, 16, true, 16}},
+  {"AES-CTR", {CKK_AES, CKM_AES_KEY_GEN, CKM_AES_CTR, 16, true, 16}},
 };
 
 std::map<std::string, DigestInfo> kDigestInfo = {
@@ -85,6 +86,7 @@ std::set<CK_MECHANISM_TYPE> encrypt_decrypt_mechanisms = {
   CKM_AES_ECB,
   CKM_AES_CBC,
   CKM_AES_CBC_PAD,
+  CKM_AES_CTR,
   CKM_DES_ECB,
   CKM_DES_CBC,
   CKM_DES_CBC_PAD,
@@ -271,6 +273,7 @@ std::set<CK_MECHANISM_TYPE> wrap_unwrap_mechanisms = {
   CKM_AES_ECB,
   CKM_AES_CBC,
   CKM_AES_CBC_PAD,
+  CKM_AES_CTR,
   CKM_DES_ECB,
   CKM_DES_CBC,
   CKM_DES_CBC_PAD,
