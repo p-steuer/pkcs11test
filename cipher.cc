@@ -560,7 +560,7 @@ INSTANTIATE_TEST_CASE_P(Ciphers, SecretKeyTest,
                                           "AES-CBC"));
 
 TEST_F(ReadOnlySessionTest, CreateSecretKeyAttributes) {
-  string key = hex_decode("");
+  string key = hex_decode("ffffffffffffffff");
   CK_OBJECT_CLASS key_class = CKO_SECRET_KEY;
   CK_KEY_TYPE key_type = CKK_DES;
   vector<CK_ATTRIBUTE> attrs = {
