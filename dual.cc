@@ -42,9 +42,21 @@ class DualSecretKeyTest : public SecretKeyTest {
 }  // namespace
 
 TEST_P(DualSecretKeyTest, DigestEncrypt) {
+  CK_RV rv;
   // Start digest and encryption operations
-  ASSERT_CKR_OK(g_fns->C_DigestInit(session_, &digest_mechanism_));
-  ASSERT_CKR_OK(g_fns->C_EncryptInit(session_, &mechanism_, key_.handle()));
+  rv = g_fns->C_DigestInit(session_, &digest_mechanism_);
+  if (rv == CKR_MECHANISM_INVALID) {
+    TEST_SKIPPED("Mechanism not supported");
+    return;
+  }
+  ASSERT_CKR_OK(rv);
+
+  rv = g_fns->C_EncryptInit(session_, &mechanism_, key_.handle());
+  if (rv == CKR_MECHANISM_INVALID) {
+    TEST_SKIPPED("Mechanism not supported");
+    return;
+  }
+  ASSERT_CKR_OK(rv);
 
   CK_BYTE ciphertext[1024];
   CK_ULONG ciphertext_bufsize = sizeof(ciphertext);

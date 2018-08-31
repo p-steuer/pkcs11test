@@ -258,6 +258,10 @@ TEST_F(ReadWriteSessionTest, GetSetOperationState) {
 
   CK_MECHANISM mechanism = {CKM_DES_ECB, NULL_PTR, 0};
   rv = g_fns->C_EncryptInit(session_, &mechanism, key.handle());
+  if (rv == CKR_MECHANISM_INVALID) {
+    TEST_SKIPPED("Mechanism not supported");
+    return;
+  }
   ASSERT_CKR_OK(rv);
 
   // Encrypt one block.
