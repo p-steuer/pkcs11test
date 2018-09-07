@@ -108,6 +108,10 @@ TEST_F(ReadOnlySessionTest, WrapUnwrap) {
   CK_BYTE data[4096];
   CK_ULONG data_len = sizeof(data);
   CK_RV rv = g_fns->C_WrapKey(session_, &wrap_mechanism, k2.handle(), k1.handle(), data, &data_len);
+  if (rv == CKR_MECHANISM_INVALID) {
+    TEST_SKIPPED("Mechanism not supported");
+    return;
+  }
   if (rv == CKR_FUNCTION_NOT_SUPPORTED) {
     TEST_SKIPPED("Key wrapping not supported");
     return;
@@ -165,6 +169,10 @@ TEST_F(ReadOnlySessionTest, WrapInvalid) {
   CK_ULONG data_len = sizeof(data);
 
   CK_RV rv = g_fns->C_WrapKey(session_, &wrap_mechanism, k2.handle(), k1.handle(), data, &data_len);
+  if (rv == CKR_MECHANISM_INVALID) {
+    TEST_SKIPPED("Mechanism not supported");
+    return;
+  }
   if (rv == CKR_FUNCTION_NOT_SUPPORTED) {
     TEST_SKIPPED("Key wrapping not supported");
     return;
@@ -205,6 +213,10 @@ TEST_F(ReadOnlySessionTest, UnwrapInvalid) {
   CK_ULONG data_len = sizeof(data);
 
   CK_RV rv = g_fns->C_WrapKey(session_, &wrap_mechanism, k2.handle(), k1.handle(), data, &data_len);
+  if (rv == CKR_MECHANISM_INVALID) {
+    TEST_SKIPPED("Mechanism not supported");
+    return;
+  }
   if (rv == CKR_FUNCTION_NOT_SUPPORTED) {
     // Assume implementation is symmetric w.r.t. Wrap/Unwrap.
     TEST_SKIPPED("Key wrapping not supported");

@@ -258,12 +258,12 @@ TEST_P(SecretKeyTest, EncryptDecryptInitInvalid) {
   EXPECT_CKR(CKR_SESSION_HANDLE_INVALID,
              g_fns->C_DecryptInit(INVALID_SESSION_HANDLE, &mechanism_, key_.handle()));
 
-  EXPECT_CKR(CKR_KEY_HANDLE_INVALID,
-             g_fns->C_EncryptInit(session_, &mechanism, INVALID_OBJECT_HANDLE));
-  EXPECT_CKR(CKR_KEY_HANDLE_INVALID,
-             g_fns->C_DecryptInit(session_, &mechanism, INVALID_OBJECT_HANDLE));
-
   CK_RV rv;
+  rv =  g_fns->C_EncryptInit(session_, &mechanism, INVALID_OBJECT_HANDLE);
+  EXPECT_TRUE(rv == CKR_KEY_HANDLE_INVALID || rv == CKR_MECHANISM_INVALID) << " rv=" << CK_RV_(rv);
+  rv = g_fns->C_DecryptInit(session_, &mechanism, INVALID_OBJECT_HANDLE);
+  EXPECT_TRUE(rv == CKR_KEY_HANDLE_INVALID || rv == CKR_MECHANISM_INVALID) << " rv=" << CK_RV_(rv);
+
   rv = g_fns->C_EncryptInit(session_, NULL_PTR, key_.handle());
   EXPECT_TRUE(rv == CKR_ARGUMENTS_BAD  || rv == CKR_MECHANISM_INVALID) << " rv=" << CK_RV_(rv);
   rv = g_fns->C_DecryptInit(session_, NULL_PTR, key_.handle());
@@ -277,13 +277,15 @@ TEST_P(SecretKeyTest, EncryptDecryptInitInvalid) {
              g_fns->C_DecryptInit(session_, &rsa_mechanism, key_.handle()));
 
   // Can't initialize the operation twice.
-  EXPECT_CKR_OK(g_fns->C_EncryptInit(session_, &mechanism_, key_.handle()));
-  EXPECT_CKR(CKR_OPERATION_ACTIVE,
-             g_fns->C_EncryptInit(session_, &mechanism_, key_.handle()));
-
-  EXPECT_CKR_OK(g_fns->C_DecryptInit(session_, &mechanism_, key_.handle()));
-  EXPECT_CKR(CKR_OPERATION_ACTIVE,
-             g_fns->C_DecryptInit(session_, &mechanism_, key_.handle()));
+  rv = g_fns->C_EncryptInit(session_, &mechanism_, key_.handle());
+  EXPECT_TRUE(rv == CKR_OK || rv == CKR_MECHANISM_INVALID) << " rv=" << CK_RV_(rv);
+  if (rv == CKR_OK) {
+    EXPECT_CKR(CKR_OPERATION_ACTIVE,
+	       g_fns->C_EncryptInit(session_, &mechanism_, key_.handle()));
+    EXPECT_CKR_OK(g_fns->C_DecryptInit(session_, &mechanism_, key_.handle()));
+    EXPECT_CKR(CKR_OPERATION_ACTIVE,
+	       g_fns->C_DecryptInit(session_, &mechanism_, key_.handle()));
+  }
 }
 
 TEST_P(SecretKeyTest, EncryptErrors) {
