@@ -735,18 +735,21 @@ TEST_F(ReadOnlySessionTest, SecretKeyTestVectors) {
       CK_MECHANISM mechanism = {info.mode,
                                 (info.has_iv ? (CK_BYTE_PTR)iv.data() : NULL_PTR),
                                 (info.has_iv ? (CK_ULONG)info.blocksize : 0)};
-      ASSERT_CKR_OK(g_fns->C_EncryptInit(session_, &mechanism, key_object));
-      string plaintext = hex_decode(testcase.plaintext);
-      CK_BYTE ciphertext[1024];
-      CK_ULONG ciphertext_len = sizeof(ciphertext);
-      ASSERT_CKR_OK(g_fns->C_Encrypt(session_,
-                                     (CK_BYTE_PTR)plaintext.data(), plaintext.size(),
-                                     ciphertext, &ciphertext_len));
-      string expected_ciphertext = hex_decode(testcase.ciphertext);
-      EXPECT_EQ(expected_ciphertext.size(), ciphertext_len);
-      EXPECT_EQ(0, memcmp(expected_ciphertext.data(),
-                          ciphertext,
-                          expected_ciphertext.size()));
+      CK_RV rv = g_fns->C_EncryptInit(session_, &mechanism, key_object);
+      ASSERT_TRUE(rv == CKR_OK || rv == CKR_MECHANISM_INVALID) << " rv=" << CK_RV_(rv);
+      if (rv == CKR_OK) {
+	string plaintext = hex_decode(testcase.plaintext);
+	CK_BYTE ciphertext[1024];
+	CK_ULONG ciphertext_len = sizeof(ciphertext);
+	ASSERT_CKR_OK(g_fns->C_Encrypt(session_,
+				       (CK_BYTE_PTR)plaintext.data(), plaintext.size(),
+				       ciphertext, &ciphertext_len));
+	string expected_ciphertext = hex_decode(testcase.ciphertext);
+	EXPECT_EQ(expected_ciphertext.size(), ciphertext_len);
+	EXPECT_EQ(0, memcmp(expected_ciphertext.data(),
+			    ciphertext,
+			    expected_ciphertext.size()));
+      }
     }
   }
 }
